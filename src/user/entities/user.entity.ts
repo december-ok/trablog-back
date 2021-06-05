@@ -2,7 +2,7 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import { CoreEntity } from '../../common/entities/entityCore.entity';
 import * as bcrypt from 'bcrypt';
-import { IsEmail, IsString, IsUrl } from 'class-validator';
+import { IsEmail, IsString, IsUrl, Length } from 'class-validator';
 import { Post } from 'src/post/entities/post.entity';
 
 @Entity()
@@ -17,14 +17,16 @@ export class User extends CoreEntity {
   @Column({ select: false })
   @Field((type) => String)
   @IsString()
+  @Length(4)
   password: string;
 
   @Column({ unique: true })
   @Field((type) => String)
   @IsString()
+  @Length(2)
   nickName: string;
 
-  @Column({ default: 'https://colorate.azurewebsites.net/SwatchColor/F39C95' })
+  @Column()
   @Field((type) => String)
   @IsUrl()
   avatarImg: string;

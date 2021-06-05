@@ -7,6 +7,8 @@ export class CreateUserInput extends PickType(User, [
   'email',
   'password',
   'nickName',
+  'avatarImg',
+  'description',
 ]) {}
 
 @ObjectType()

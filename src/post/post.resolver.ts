@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PostService } from './post.service';
-import { GetPostsOutput } from './dtos/getPosts.dto';
+import { GetPostsInput, GetPostsOutput } from './dtos/getPosts.dto';
 import { GetPostInput, GetPostOutput } from './dtos/getPost.dto';
 import { CreatePostInput, CreatePostOutput } from './dtos/createPost.dto';
 import { UseGuards } from '@nestjs/common';
@@ -13,14 +13,24 @@ import {
   TagSearchPostInput,
   TagSearchPostOutput,
 } from './dtos/tagSearchPost.dto';
+import { GetUserPostsInput, GetUserPostsOutput } from './dtos/getUserPost.dto';
 
 @Resolver()
 export class PostResolver {
   constructor(private readonly postService: PostService) {}
 
-  @Query((returns) => GetPostsOutput)
-  async getPosts(): Promise<GetPostsOutput> {
-    return await this.postService.getPosts();
+  @Mutation((returns) => GetPostsOutput)
+  async getPosts(
+    @Args('input') getPostsInput: GetPostsInput,
+  ): Promise<GetPostsOutput> {
+    return await this.postService.getPosts(getPostsInput);
+  }
+
+  @Mutation((returns) => GetUserPostsOutput)
+  async getUserPosts(
+    @Args('input') getUserPostsInput: GetUserPostsInput,
+  ): Promise<GetUserPostsOutput> {
+    return await this.postService.getUserPosts(getUserPostsInput);
   }
 
   @UseGuards(AuthGuard)

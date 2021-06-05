@@ -1,8 +1,8 @@
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { GetPostsOutput } from './dtos/getPosts.dto';
+import { GetPostsInput, GetPostsOutput } from './dtos/getPosts.dto';
 import { CreatePostOutput, CreatePostInput } from './dtos/createPost.dto';
 import { GetPostInput, GetPostOutput } from './dtos/getPost.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -12,6 +12,7 @@ import {
   TagSearchPostInput,
   TagSearchPostOutput,
 } from './dtos/tagSearchPost.dto';
+import { GetUserPostsInput, GetUserPostsOutput } from './dtos/getUserPost.dto';
 
 @Injectable()
 export class PostService {
@@ -19,9 +20,33 @@ export class PostService {
     @InjectRepository(Post) private readonly posts: Repository<Post>,
   ) {}
 
-  async getPosts(): Promise<GetPostsOutput> {
+  async getPosts({ skipFrom }: GetPostsInput): Promise<GetPostsOutput> {
     try {
-      const postList = await this.posts.find({ relations: ['user'], take: 9 });
+      const postList = await this.posts.find({
+        relations: ['user'],
+        take: 9,
+        skip: skipFrom,
+        order: { createdAt: 'DESC' },
+      });
+      return { ok: true, postList };
+    } catch (e) {
+      return { ok: false, error: e.toString() };
+    }
+  }
+
+  async getUserPosts({
+    id,
+    skipFrom,
+  }: GetUserPostsInput): Promise<GetUserPostsOutput> {
+    try {
+      const postList = await this.posts
+        .createQueryBuilder('post')
+        .leftJoinAndSelect('post.user', 'user')
+        .orderBy('post.createdAt', 'DESC')
+        .where('user.id = :id', { id })
+        .skip(skipFrom)
+        .take(9)
+        .getMany();
       return { ok: true, postList };
     } catch (e) {
       return { ok: false, error: e.toString() };
@@ -59,6 +84,7 @@ export class PostService {
     skipFrom,
   }: SearchPostInput): Promise<SearchPostOutput> {
     try {
+      if (search === '') return { ok: true, postList: [] };
       const pL = await this.posts
         .createQueryBuilder('post')
         .innerJoinAndSelect('post.user', 'user')
