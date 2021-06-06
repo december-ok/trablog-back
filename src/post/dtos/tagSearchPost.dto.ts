@@ -14,4 +14,7 @@ export class TagSearchPostInput {
 export class TagSearchPostOutput extends CoreEntity {
   @Field((type) => [Post], { nullable: true })
   postList?: Post[];
+
+  @Field((type) => String, { nullable: true })
+  searchTerm?: string;
 }

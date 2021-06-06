@@ -118,7 +118,7 @@ export class PostService {
         .skip(skipFrom)
         .take(9)
         .getMany();
-      return { ok: true, postList: pL };
+      return { ok: true, postList: pL, searchTerm: tag };
     } catch (e) {
       return { ok: false, error: e.toString() };
     }
