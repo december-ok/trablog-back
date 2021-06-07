@@ -8,5 +8,3 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
-
-export const secretKey = '4zmTm627oBZRob8wAvxghKWZp4kt7tuk';

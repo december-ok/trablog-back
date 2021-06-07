@@ -1,7 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { secretKey } from 'src/main';
 import { UserService } from './user.service';
 
 @Injectable()
@@ -12,7 +11,7 @@ export class UserMiddleWare implements NestMiddleware {
     if ('x-jwt' in req.headers) {
       const token = req.headers['x-jwt'];
       try {
-        const payload = jwt.verify(token, secretKey);
+        const payload = jwt.verify(token, process.env.SECRET);
         if (typeof payload === 'object' && payload.hasOwnProperty('id')) {
           try {
             const { user, ok, error } = await this.userService.getUserById({

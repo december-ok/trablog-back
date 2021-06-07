@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { CreateUserInput } from './dtos/createUser.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import * as jwt from 'jsonwebtoken';
-import { secretKey } from 'src/main';
 import {
   GetUserProfileInput,
   GetUserProfileOutput,
@@ -57,7 +56,7 @@ export class UserService {
       if (!passwordCorrect) {
         return { ok: false, error: 'Wrong password' };
       }
-      const token = jwt.sign({ id: user.id }, secretKey);
+      const token = jwt.sign({ id: user.id }, process.env.SECRET);
       const returnUser = await this.users.findOne({ email });
       return { ok: true, token, user: returnUser };
     } catch (e) {
